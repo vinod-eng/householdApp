@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Household Dashboard</h1>
+        <div id="user-info">
+            Logged in as: <span id="user-email"></span> |
+            Household: <span id="household-info">Loading...</span>
+            <button id="logout-button">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button class="tab-link active" onclick="openTab(event, 'kitchen')">Kitchen</button>
+            <button class="tab-link" onclick="openTab(event, 'bills')">Bills</button>
+            <button class="tab-link" onclick="openTab(event, 'shopping')">Shopping List</button>
+        </div>
+
+        <div id="kitchen" class="tab-content" style="display: block;">
+            <h2>Kitchen Inventory</h2>
+            <div class="add-item-form">
+                <input type="text" id="kitchen-item-desc" placeholder="Item Description">
+                <input type="number" id="kitchen-item-qty" placeholder="Quantity" value="1">
+                <button id="add-kitchen-item">Add Item</button>
+            </div>
+            <ul id="kitchen-item-list">
+                <li>Loading inventory...</li>
+            </ul>
+        </div>
+
+        <div id="bills" class="tab-content">
+            <h2>Bills</h2>
+             <div class="add-item-form">
+                <input type="text" id="bill-desc" placeholder="Bill Description (e.g., Rent, Electricity)">
+                <input type="number" id="bill-amount" placeholder="Amount ($)">
+                <button id="add-bill-item">Add Bill</button>
+            </div>
+             <ul id="bill-item-list">
+                 <li>Loading bills...</li>
+             </ul>
+        </div>
+
+        <div id="shopping" class="tab-content">
+            <h2>Shopping List</h2>
+             <div class="add-item-form">
+                <input type="text" id="shopping-item-desc" placeholder="Item to Buy">
+                <input type="number" id="shopping-item-qty" placeholder="Quantity" value="1">
+                <button id="add-shopping-item">Add to List</button>
+            </div>
+             <ul id="shopping-item-list">
+                 <li>Loading shopping list...</li>
+             </ul>
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script src="firebase-config.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
