@@ -3,68 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Household Dashboard</title>
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://householdapp-b358d.firebaseapp.com; 
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.gstatic.com https://*.googleapis.com https://www.gstatic.com https://www.googleapis.com https://www.googletagmanager.com;
+                   style-src 'self' 'unsafe-inline';
+                   connect-src 'self' 
+                              https://*.firebaseio.com 
+                              https://*.googleapis.com 
+                              wss://*.firebaseio.com 
+                              https://identitytoolkit.googleapis.com 
+                              https://firestore.googleapis.com 
+                              https://householdapp-b358d.firebaseapp.com 
+                              https://householdapp-b358d.firebasestorage.app
+                              https://*.google-analytics.com 
+                              https://*.analytics.google.com 
+                              https://*.googletagmanager.com;
+                   frame-src 'self' https://*.firebaseapp.com https://householdapp-b358d.firebaseapp.com;
+                   img-src 'self' https://*.google-analytics.com https://*.googletagmanager.com data: blob:;">
+    <title>Household Hub - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Household Dashboard</h1>
+    <div class="dashboard-container">
+        <h1>Welcome to Household Hub</h1>
         <div id="user-info">
-            Logged in as: <span id="user-email"></span> |
-            Household: <span id="household-info">Loading...</span>
-            <button id="logout-button">Logout</button>
+            <p>Loading user information...</p>
         </div>
-    </header>
+        <button id="logout-button">Logout</button>
+    </div>
 
-    <main>
-        <div class="tabs">
-            <button class="tab-link active" onclick="openTab(event, 'kitchen')">Kitchen</button>
-            <button class="tab-link" onclick="openTab(event, 'bills')">Bills</button>
-            <button class="tab-link" onclick="openTab(event, 'shopping')">Shopping List</button>
-        </div>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { 
+            getFirestore, 
+            initializeFirestore,
+            persistentLocalCache,
+            persistentSingleTabManager,
+            doc,
+            getDoc
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfoQ5NEw8Cbl5Lp51FdNgDDHdV_eP01pU",
+            authDomain: "householdapp-b358d.firebaseapp.com",
+            projectId: "householdapp-b358d",
+            storageBucket: "householdapp-b358d.firebasestorage.app",
+            messagingSenderId: "88859917799",
+            appId: "1:88859917799:web:a4f489b8e274584b0f1142",
+            measurementId: "G-5FCLN35ZE6"
+        };
 
-        <div id="kitchen" class="tab-content" style="display: block;">
-            <h2>Kitchen Inventory</h2>
-            <div class="add-item-form">
-                <input type="text" id="kitchen-item-desc" placeholder="Item Description">
-                <input type="number" id="kitchen-item-qty" placeholder="Quantity" value="1">
-                <button id="add-kitchen-item">Add Item</button>
-            </div>
-            <ul id="kitchen-item-list">
-                <li>Loading inventory...</li>
-            </ul>
-        </div>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+                tabManager: persistentSingleTabManager()
+            })
+        });
 
-        <div id="bills" class="tab-content">
-            <h2>Bills</h2>
-             <div class="add-item-form">
-                <input type="text" id="bill-desc" placeholder="Bill Description (e.g., Rent, Electricity)">
-                <input type="number" id="bill-amount" placeholder="Amount ($)">
-                <button id="add-bill-item">Add Bill</button>
-            </div>
-             <ul id="bill-item-list">
-                 <li>Loading bills...</li>
-             </ul>
-        </div>
+        // Handle authentication state changes
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                // If not logged in, redirect to login page
+                window.location.href = 'index.html';
+                return;
+            }
 
-        <div id="shopping" class="tab-content">
-            <h2>Shopping List</h2>
-             <div class="add-item-form">
-                <input type="text" id="shopping-item-desc" placeholder="Item to Buy">
-                <input type="number" id="shopping-item-qty" placeholder="Quantity" value="1">
-                <button id="add-shopping-item">Add to List</button>
-            </div>
-             <ul id="shopping-item-list">
-                 <li>Loading shopping list...</li>
-             </ul>
-        </div>
-    </main>
+            // Get user info
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                const userData = userDoc.data();
+                const userInfo = document.getElementById('user-info');
+                
+                if (userData) {
+                    userInfo.innerHTML = `
+                        <p>Email: ${userData.email}</p>
+                        <p>Household ID: ${userData.householdId}</p>
+                    `;
+                } else {
+                    userInfo.innerHTML = '<p>Error loading user data</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                document.getElementById('user-info').innerHTML = '<p>Error loading user data</p>';
+            }
+        });
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-    <script src="firebase-config.js"></script>
-    <script src="dashboard.js"></script>
+        // Handle logout
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        });
+    </script>
 </body>
 </html>

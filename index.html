@@ -3,38 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://householdapp-b358d.firebaseapp.com; 
+                   script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.gstatic.com https://*.googleapis.com https://www.gstatic.com https://www.googleapis.com https://www.googletagmanager.com;
+                   style-src 'self' 'unsafe-inline';
+                   connect-src 'self' 
+                              https://*.firebaseio.com 
+                              https://*.googleapis.com 
+                              wss://*.firebaseio.com 
+                              https://identitytoolkit.googleapis.com 
+                              https://firestore.googleapis.com 
+                              https://householdapp-b358d.firebaseapp.com 
+                              https://householdapp-b358d.firebasestorage.app
+                              https://*.google-analytics.com 
+                              https://*.analytics.google.com 
+                              https://*.googletagmanager.com;
+                   frame-src 'self' https://*.firebaseapp.com https://householdapp-b358d.firebaseapp.com;
+                   img-src 'self' https://*.google-analytics.com https://*.googletagmanager.com data: blob:;">
     <title>Household Hub - Login</title>
+    <style>
+        .error-message {
+            color: red;
+            margin: 10px 0;
+        }
+        .offline-banner {
+            background-color: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+        .offline-banner.visible {
+            display: block;
+        }
+    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="offline-banner" class="offline-banner">
+        You are currently offline. Some features may be limited.
+    </div>
+
     <div class="auth-container">
         <h1>Household Hub</h1>
 
         <div id="login-form">
             <h2>Login</h2>
-            <input type="email" id="login-email" placeholder="Email" required>
-            <input type="password" id="login-password" placeholder="Password" required>
-            <button id="login-button">Login</button>
-            <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
-            <p id="login-error" class="error-message"></p>
+            <form onsubmit="return false;">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" id="login-button">Login</button>
+                <p>Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+                <p id="login-error" class="error-message"></p>
+            </form>
         </div>
 
         <div id="signup-form" style="display: none;">
             <h2>Sign Up</h2>
-            <input type="email" id="signup-email" placeholder="Email" required>
-            <input type="password" id="signup-password" placeholder="Password" required>
-             <input type="text" id="household-id" placeholder="Household ID (leave blank to create new)">
-            <button id="signup-button">Sign Up</button>
-            <p>Already have an account? <a href="#" id="show-login">Login</a></p>
-            <p id="signup-error" class="error-message"></p>
+            <form onsubmit="return false;">
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <input type="text" id="household-id" placeholder="Household ID (leave blank to create new)">
+                <button type="submit" id="signup-button">Sign Up</button>
+                <p>Already have an account? <a href="#" id="show-login">Login</a></p>
+                <p id="signup-error" class="error-message"></p>
+            </form>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { 
+            initializeFirestore,
+            persistentLocalCache,
+            persistentSingleTabManager,
+            CACHE_SIZE_UNLIMITED
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+        
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfoQ5NEw8Cbl5Lp51FdNgDDHdV_eP01pU",
+            authDomain: "householdapp-b358d.firebaseapp.com",
+            projectId: "householdapp-b358d",
+            storageBucket: "householdapp-b358d.firebasestorage.app",
+            messagingSenderId: "88859917799",
+            appId: "1:88859917799:web:a4f489b8e274584b0f1142",
+            measurementId: "G-5FCLN35ZE6"
+        };
 
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Initialize Firestore with persistence and unlimited cache
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+                tabManager: persistentSingleTabManager(),
+                cacheSizeBytes: CACHE_SIZE_UNLIMITED
+            })
+        });
+
+        // Handle offline status
+        const offlineBanner = document.getElementById('offline-banner');
+        
+        function updateOnlineStatus() {
+            if (navigator.onLine) {
+                offlineBanner.classList.remove('visible');
+            } else {
+                offlineBanner.classList.add('visible');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus(); // Initial check
+
+        // Export the Firebase services
+        window.firebaseServices = { auth, db };
+        
+        console.log('Firebase initialized successfully');
+    </script>
+
+    <!-- Load auth logic after Firebase is initialized -->
+    <script type="module" src="auth.js"></script>
 </body>
 </html>
