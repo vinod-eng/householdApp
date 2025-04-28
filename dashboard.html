@@ -17,91 +17,65 @@
                               https://householdapp-b358d.firebasestorage.app
                               https://*.google-analytics.com 
                               https://*.analytics.google.com 
-                              https://*.googletagmanager.com;
+                              https://*.googletagmanager.com
+                              https://*.firebasestorage.googleapis.com;
                    frame-src 'self' https://*.firebaseapp.com https://householdapp-b358d.firebaseapp.com;
-                   img-src 'self' https://*.google-analytics.com https://*.googletagmanager.com data: blob:;">
+                   img-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://*.firebasestorage.googleapis.com data: blob:;">
     <title>Household Hub - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="dashboard-container">
+    <header>
         <h1>Welcome to Household Hub</h1>
         <div id="user-info">
-            <p>Loading user information...</p>
+            <span id="user-email"></span>
+            <span id="household-info"></span>
+            <button id="logout-button">Logout</button>
         </div>
-        <button id="logout-button">Logout</button>
-    </div>
+    </header>
+
+    <main>
+        <div class="tabs">
+            <button class="tab-link active" onclick="openTab(event, 'kitchen')">Kitchen</button>
+            <button class="tab-link" onclick="openTab(event, 'shopping')">Shopping List</button>
+            <button class="tab-link" onclick="openTab(event, 'bills')">Bills</button>
+        </div>
+
+        <!-- Kitchen Tab -->
+        <div id="kitchen" class="tab-content" style="display: block;">
+            <div class="add-item-form">
+                <input type="text" id="kitchen-item-desc" placeholder="Item description">
+                <input type="number" id="kitchen-item-qty" placeholder="Quantity" min="1" value="1">
+                <input type="file" id="kitchen-item-image" accept="image/*">
+                <button id="add-kitchen-item">Add Item</button>
+            </div>
+            <ul id="kitchen-item-list"></ul>
+        </div>
+
+        <!-- Shopping List Tab -->
+        <div id="shopping" class="tab-content">
+            <div class="add-item-form">
+                <input type="text" id="shopping-item-desc" placeholder="Item description">
+                <input type="number" id="shopping-item-qty" placeholder="Quantity" min="1" value="1">
+                <input type="file" id="shopping-item-image" accept="image/*">
+                <button id="add-shopping-item">Add Item</button>
+            </div>
+            <ul id="shopping-item-list"></ul>
+        </div>
+
+        <!-- Bills Tab -->
+        <div id="bills" class="tab-content">
+            <div class="add-item-form">
+                <input type="text" id="bill-desc" placeholder="Bill description">
+                <input type="number" id="bill-amount" placeholder="Amount" step="0.01" min="0">
+                <input type="date" id="bill-due-date">
+                <button id="add-bill-item">Add Bill</button>
+            </div>
+            <ul id="bill-item-list"></ul>
+        </div>
+    </main>
 
     <!-- Firebase App (the core Firebase SDK) -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-        import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-        import { 
-            getFirestore, 
-            initializeFirestore,
-            persistentLocalCache,
-            persistentSingleTabManager,
-            doc,
-            getDoc
-        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
-        
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfoQ5NEw8Cbl5Lp51FdNgDDHdV_eP01pU",
-            authDomain: "householdapp-b358d.firebaseapp.com",
-            projectId: "householdapp-b358d",
-            storageBucket: "householdapp-b358d.firebasestorage.app",
-            messagingSenderId: "88859917799",
-            appId: "1:88859917799:web:a4f489b8e274584b0f1142",
-            measurementId: "G-5FCLN35ZE6"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = initializeFirestore(app, {
-            localCache: persistentLocalCache({
-                tabManager: persistentSingleTabManager()
-            })
-        });
-
-        // Handle authentication state changes
-        auth.onAuthStateChanged(async (user) => {
-            if (!user) {
-                // If not logged in, redirect to login page
-                window.location.href = 'index.html';
-                return;
-            }
-
-            // Get user info
-            try {
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                const userData = userDoc.data();
-                const userInfo = document.getElementById('user-info');
-                
-                if (userData) {
-                    userInfo.innerHTML = `
-                        <p>Email: ${userData.email}</p>
-                        <p>Household ID: ${userData.householdId}</p>
-                    `;
-                } else {
-                    userInfo.innerHTML = '<p>Error loading user data</p>';
-                }
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                document.getElementById('user-info').innerHTML = '<p>Error loading user data</p>';
-            }
-        });
-
-        // Handle logout
-        document.getElementById('logout-button').addEventListener('click', async () => {
-            try {
-                await signOut(auth);
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Error signing out:', error);
-            }
-        });
-    </script>
+    <script type="module" src="dashboard.js"></script>
 </body>
 </html>
