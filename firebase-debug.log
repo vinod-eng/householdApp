@@ -1,0 +1,21 @@
+[debug] [2025-05-03T03:16:58.543Z] ----------------------------------------------------------------------
+[debug] [2025-05-03T03:16:58.545Z] Command:       /nix/store/ixbb20farqh1f4fqbmsn6b1ixn8mc8ij-nodejs-20.18.1/bin/node /nix/store/984bjqzf7prsischdc86jmqbn4ha5yxd-firebase-tools-14.2.0/lib/node_modules/firebase-tools/lib/bin/firebase.js init
+[debug] [2025-05-03T03:16:58.546Z] CLI Version:   14.2.0
+[debug] [2025-05-03T03:16:58.546Z] Platform:      linux
+[debug] [2025-05-03T03:16:58.546Z] Node Version:  v20.18.1
+[debug] [2025-05-03T03:16:58.546Z] Time:          Sat May 03 2025 03:16:58 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-05-03T03:16:58.546Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-05-03T03:16:58.553Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-03T03:16:58.554Z] > authorizing via signed-in user (vinod.yerupilli@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/user/householdApp
+

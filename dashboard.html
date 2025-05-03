@@ -3,38 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" 
-          content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://householdapp-b358d.firebaseapp.com; 
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' https://*.firebaseio.com https://*.googleapis.com https://householdapp-b358d.firebaseapp.com;
                    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.gstatic.com https://*.googleapis.com https://www.gstatic.com https://www.googleapis.com https://www.googletagmanager.com;
                    style-src 'self' 'unsafe-inline';
-                   connect-src 'self' 
-                              https://*.firebaseio.com 
-                              https://*.googleapis.com 
-                              wss://*.firebaseio.com 
-                              https://identitytoolkit.googleapis.com 
-                              https://firestore.googleapis.com 
-                              https://householdapp-b358d.firebaseapp.com 
+                   connect-src 'self'
+                              https://*.firebaseio.com
+                              https://*.googleapis.com
+                              wss://*.firebaseio.com
+                              https://identitytoolkit.googleapis.com
+                              https://firestore.googleapis.com
+                              https://householdapp-b358d.firebaseapp.com
                               https://householdapp-b358d.firebasestorage.app
-                              https://*.google-analytics.com 
-                              https://*.analytics.google.com 
+                              https://*.google-analytics.com
+                              https://*.analytics.google.com
                               https://*.googletagmanager.com
                               https://*.firebasestorage.googleapis.com;
                    frame-src 'self' https://*.firebaseapp.com https://householdapp-b358d.firebaseapp.com;
                    img-src 'self' https://*.google-analytics.com https://*.googletagmanager.com https://*.firebasestorage.googleapis.com data: blob:;">
     <title>Household Hub - Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Specific overrides or styles for dashboard.html can go here if needed */
+        /* Adjust if offline banner needs specific styling here */
+        .offline-banner {
+            background-color: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            display: none;
+            position: fixed; /* Keep fixed positioning */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001; /* Ensure it's above the sticky header */
+        }
+        .offline-banner.visible {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <header>
+    <div id="offline-banner" class="offline-banner">
+        You are currently offline. Some features may be limited.
+    </div>
+
+    <header class="app-header">
         <h1>Welcome to Household Hub</h1>
         <div id="user-info">
-            <span id="user-email"></span>
+            <span id="user-email">Loading...</span>
             <span id="household-info"></span>
             <button id="logout-button">Logout</button>
         </div>
     </header>
 
-    <main>
+    <main class="content-container animate-fade-in">
         <div class="tabs">
             <button class="tab-link active" onclick="openTab(event, 'kitchen')">Kitchen</button>
             <button class="tab-link" onclick="openTab(event, 'shopping')">Shopping List</button>
@@ -42,36 +65,39 @@
         </div>
 
         <!-- Kitchen Tab -->
-        <div id="kitchen" class="tab-content" style="display: block;">
+        <div id="kitchen" class="tab-content animate-slide-up" style="display: block;">
+            <h2>Kitchen Inventory</h2>
             <div class="add-item-form">
                 <input type="text" id="kitchen-item-desc" placeholder="Item description">
                 <input type="number" id="kitchen-item-qty" placeholder="Quantity" min="1" value="1">
                 <input type="file" id="kitchen-item-image" accept="image/*">
                 <button id="add-kitchen-item">Add Item</button>
             </div>
-            <ul id="kitchen-item-list"></ul>
+            <ul id="kitchen-item-list" class="item-list"></ul>
         </div>
 
         <!-- Shopping List Tab -->
-        <div id="shopping" class="tab-content">
+        <div id="shopping" class="tab-content animate-slide-up">
+            <h2>Shopping List</h2>
             <div class="add-item-form">
                 <input type="text" id="shopping-item-desc" placeholder="Item description">
                 <input type="number" id="shopping-item-qty" placeholder="Quantity" min="1" value="1">
                 <input type="file" id="shopping-item-image" accept="image/*">
                 <button id="add-shopping-item">Add Item</button>
             </div>
-            <ul id="shopping-item-list"></ul>
+            <ul id="shopping-item-list" class="item-list"></ul>
         </div>
 
         <!-- Bills Tab -->
-        <div id="bills" class="tab-content">
+        <div id="bills" class="tab-content animate-slide-up">
+            <h2>Upcoming Bills</h2>
             <div class="add-item-form">
                 <input type="text" id="bill-desc" placeholder="Bill description">
                 <input type="number" id="bill-amount" placeholder="Amount" step="0.01" min="0">
                 <input type="date" id="bill-due-date">
                 <button id="add-bill-item">Add Bill</button>
             </div>
-            <ul id="bill-item-list"></ul>
+            <ul id="bill-item-list" class="item-list"></ul>
         </div>
     </main>
 
